@@ -17,9 +17,9 @@ export default function LoginPage() {
 
         <div className="rounded-lg bg-card p-12">
           <form className="space-y-6">
-            <div className="space-y-4">
-              <p className="text-center text-sm text-muted-foreground">
-                An email has been sent to <span className="underline">your email</span> with a six-digit code
+            <div className="space-y-4 w-full">
+              <p className="w-full text-center text-sm text-muted-foreground">
+                An email has been sent to <span className="text-white underline">your email</span> with a six-digit code
                 to verify your workspace email address. Enter the verification code below to continue.
               </p>
               <OtpInput />
@@ -112,7 +112,7 @@ function OtpInput() {
   }
 
   return (
-    <div className="flex justify-center gap-2">
+    <div className="flex w-full justify-between gap-2">
       {[0, 1, 2, 3, 4, 5].map((index) => (
         <input
           key={index}
