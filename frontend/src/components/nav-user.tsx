@@ -81,8 +81,10 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
+              <DropdownMenuItem 
+                className="bg-[#542CDE]/10 text-[#542CDE] hover:bg-[#542CDE]/20 focus:bg-[#542CDE]/20 focus:text-[#542CDE]"
+              >
+                <Sparkles className="text-[#542CDE]" />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>

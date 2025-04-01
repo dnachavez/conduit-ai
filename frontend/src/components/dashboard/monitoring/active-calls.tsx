@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ThumbsUp, CircleDashed, ThumbsDown } from "lucide-react"
+import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   Card,
@@ -11,6 +11,21 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { CopyButton } from "@/components/dashboard/monitoring/copy-button"
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger 
+} from "@/components/ui/popover"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface ActiveCallsProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -121,8 +136,127 @@ export function ActiveCalls({
     return `${firstPart} ... ${lastPart}`;
   }
 
+  // Function to render agent type with special styling for AI agents
+  const renderAgentType = (agentType: string) => {
+    if (agentType === "AI Agent") {
+      return (
+        <div className="flex items-center gap-1.5">
+          <style jsx global>{`
+            @keyframes pulse {
+              0% { transform: scale(1); opacity: 1; }
+              50% { transform: scale(1.2); opacity: 0.8; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            
+            @keyframes shimmer {
+              0% { background-position: -200% center; }
+              100% { background-position: 200% center; }
+            }
+            
+            .sparkle-icon {
+              animation: pulse 2s infinite ease-in-out;
+            }
+            
+            .gradient-text {
+              background: linear-gradient(to right, #542cde, #0faed8, #542cde);
+              background-size: 200% auto;
+              animation: shimmer 3s infinite linear;
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+            }
+          `}</style>
+          <Sparkles className="size-3.5 text-[#542cde] sparkle-icon" />
+          <span className="text-xs font-medium gradient-text">
+            {agentType}
+          </span>
+        </div>
+      );
+    }
+    return <span className="text-xs">{agentType}</span>;
+  };
+
+  // Function to format and style duration
+  const formatDuration = (durationStr: string) => {
+    // Parse the duration string (format: mm:ss)
+    const [minutes, seconds] = durationStr.split(':').map(Number);
+    const totalMinutes = minutes + (seconds / 60);
+    
+    // Format based on duration length
+    let formattedText = '';
+    let colorClass = '';
+    
+    if (totalMinutes < 1) {
+      formattedText = `<1m`;
+      colorClass = 'text-green-500';
+    } else if (totalMinutes < 5) {
+      formattedText = `${Math.floor(totalMinutes)}m`;
+      colorClass = 'text-green-500';
+    } else if (totalMinutes < 10) {
+      formattedText = `${Math.floor(totalMinutes)}m`;
+      colorClass = 'text-blue-500';
+    } else if (totalMinutes < 15) {
+      formattedText = `${Math.floor(totalMinutes)}m`;
+      colorClass = 'text-yellow-500';
+    } else {
+      formattedText = `${Math.floor(totalMinutes)}m`;
+      colorClass = 'text-orange-500';
+    }
+    
+    return (
+      <span className={`font-medium ${colorClass}`}>
+        {formattedText}
+      </span>
+    );
+  }
+
+  const handleRowClick = (callId: string) => {
+    // Implementation for when a row is clicked
+    console.log(`Call ${callId} details requested`);
+  }
+  
+  const handleCopyId = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(id);
+      console.log("Call ID copied to clipboard:", id);
+    } catch (error) {
+      console.error("Failed to copy call ID:", error);
+    }
+  }
+  
+  const handleEndCall = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("Ending call:", id);
+    // Implementation for ending a call
+  }
+  
+  const handleViewDetails = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("Viewing details for call:", id);
+    // Implementation for viewing call details
+  }
+  
+  const handleDownloadTranscript = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("Downloading transcript for call:", id);
+    // Implementation for downloading transcript
+  }
+  
+  const handleAddNote = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("Adding note to call:", id);
+    // Implementation for adding a note
+  }
+  
+  const handleFlagCall = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    console.log("Flagging call for review:", id);
+    // Implementation for flagging call
+  }
+
   return (
-    <Card className={cn("border-0", className)} {...props}>
+    <Card className={cn("bg-muted/50 border-0", className)} {...props}>
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium">Active Calls</CardTitle>
         <CardDescription className="text-xs">
@@ -140,20 +274,33 @@ export function ActiveCalls({
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Duration</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Status</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Sentiment</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Topics</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Articles</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Context</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
               {activeCalls.map((call) => (
-                <tr key={call.id} className="border-b border-border/50">
-                  <td className="px-4 py-3 text-xs font-mono">{formatCallId(call.id)}</td>
+                <tr 
+                  key={call.id} 
+                  className="border-b border-border/50 hover:bg-accent/5 cursor-pointer transition-colors"
+                  onClick={() => handleRowClick(call.id)}
+                >
+                  <td className="px-4 py-3 text-xs font-mono">
+                    <CopyButton 
+                      value={call.id} 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-6 w-6 rounded-full"
+                    >
+                      {formatCallId(call.id)}
+                    </CopyButton>
+                  </td>
                   <td className="px-4 py-3">
                     <div className="text-xs font-medium">{call.caller}</div>
                     <div className="text-xs text-muted-foreground">{call.callerPhone}</div>
                   </td>
-                  <td className="px-4 py-3 text-xs">{call.agentType}</td>
-                  <td className="px-4 py-3 text-xs">{call.duration}</td>
+                  <td className="px-4 py-3 text-xs">{renderAgentType(call.agentType)}</td>
+                  <td className="px-4 py-3 text-xs">{formatDuration(call.duration)}</td>
                   <td className="px-4 py-3">{getStatusBadge(call.status)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
@@ -162,23 +309,96 @@ export function ActiveCalls({
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="text-xs text-muted-foreground">
-                      {call.topics.split(',').map((topic, index) => (
-                        <React.Fragment key={index}>
-                          <span>{topic.trim()}</span>
-                          {index < call.topics.split(',').length - 1 && <br />}
-                        </React.Fragment>
-                      ))}
+                    <div className="flex items-center gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-7 px-2">
+                            <MessageSquare className="size-3.5" />
+                            <span className="text-xs">Topics</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-3" align="start">
+                          <div className="space-y-2">
+                            <h4 className="text-xs font-semibold">Conversation Topics</h4>
+                            <div className="text-xs text-muted-foreground space-y-1">
+                              {call.topics.split(',').map((topic, index) => (
+                                <div key={index} className="flex items-center gap-2">
+                                  <Badge variant="outline" className="bg-secondary/50 text-secondary-foreground text-xs">
+                                    {topic.trim()}
+                                  </Badge>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-7 px-2">
+                            <FileIcon className="size-3.5" />
+                            <span className="text-xs">Articles</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-3" align="start">
+                          <div className="space-y-2">
+                            <h4 className="text-xs font-semibold">Referenced Articles</h4>
+                            <ul className="text-xs text-muted-foreground space-y-1.5">
+                              {call.articles.map((article, index) => (
+                                <li key={index} className="flex items-center gap-2">
+                                  <InfoIcon className="size-3 text-primary" />
+                                  <span className="hover:text-primary hover:underline cursor-pointer">
+                                    {article}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="text-xs text-muted-foreground">
-                      {call.articles.map((article, index) => (
-                        <React.Fragment key={index}>
-                          <span>{article}</span>
-                          {index < call.articles.length - 1 && <br />}
-                        </React.Fragment>
-                      ))}
+                    <div className="flex items-center justify-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                            <MoreVertical className="size-3.5" />
+                            <span className="sr-only">Open menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-[200px]">
+                          <DropdownMenuLabel className="text-xs font-semibold">Call Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={(e) => handleViewDetails(call.id, e)} className="text-xs">
+                            <Eye className="mr-2 size-3.5" />
+                            <span>View Details</span>
+                          </DropdownMenuItem>
+                          {/* <DropdownMenuItem onClick={(e) => handleCopyId(call.id, e)} className="text-xs">
+                            <Copy className="mr-2 size-3.5" />
+                            <span>Copy Call ID</span>
+                          </DropdownMenuItem> */}
+                          {call.status === "ongoing" && (
+                            <DropdownMenuItem onClick={(e) => handleEndCall(call.id, e)} className="bg-red-500/10 text-red-500 hover:bg-red-500/20 focus:bg-red-500/20 focus:text-red-500 text-xs">
+                              <PhoneOff className="mr-2 size-3.5 text-red-500" />
+                              <span>End Call</span>
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={(e) => handleDownloadTranscript(call.id, e)} className="text-xs">
+                            <Download className="mr-2 size-3.5" />
+                            <span>Download Transcript</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => handleAddNote(call.id, e)} className="text-xs">
+                            <FileEdit className="mr-2 size-3.5" />
+                            <span>Add Note</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={(e) => handleFlagCall(call.id, e)} className="text-xs">
+                            <Flag className="mr-2 size-3.5" />
+                            <span>Flag for Review</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </td>
                 </tr>
