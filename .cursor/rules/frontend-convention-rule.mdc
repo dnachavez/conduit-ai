@@ -1,0 +1,159 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Frontend Codebase Conventions and Rules
+
+## Project Overview
+- Framework: Next.js 15.2.4 with App Router
+- React: React 19
+- TypeScript: Fully typed codebase
+- CSS: Tailwind CSS 4.0.17
+- Component Library: shadcn/ui (New York style variant)
+- UI Components: Custom components built on Radix UI primitives
+- State Management: React hooks
+- Icon Library: Lucide React
+
+## Directory Structure
+- `/frontend/src/app`: Next.js App Router pages and layouts
+- `/frontend/src/components`: React components organized by feature and role
+  - `/frontend/src/components/ui`: Reusable UI components
+  - `/frontend/src/components/dashboard`: Dashboard-specific components
+- `/frontend/src/features`: Feature-specific modules and components
+- `/frontend/src/services`: API services and external integrations
+- `/frontend/src/store`: State management store (context/redux)
+- `/frontend/src/types`: TypeScript type definitions and interfaces
+- `/frontend/src/utils`: Utility functions and helper methods
+- `/frontend/src/lib`: Utility functions and shared logic
+- `/frontend/src/hooks`: Custom React hooks
+
+## Component Naming Conventions
+1. Use PascalCase for component names: `Button.tsx`, `TeamSwitcher.tsx`
+2. File names should match the component name: `Button` component in `button.tsx` file
+3. Prefix navigation components with `nav-`: `nav-main.tsx`, `nav-user.tsx`
+4. UI components should be atomic and focused on a single responsibility
+
+## Component Structure
+1. Import external dependencies first, then internal dependencies
+2. Use named exports for components: `export { Button, buttonVariants }`
+3. Define prop types with TypeScript interfaces or type aliases
+4. For UI components:
+   - Define variants using `cva` from class-variance-authority
+   - Export both the component and its variants when applicable
+
+```jsx
+const buttonVariants = cva(
+  "base-classes",
+  {
+    variants: {
+      variant: { /* variants */ },
+      size: { /* sizes */ }
+    },
+    defaultVariants: { /* defaults */ }
+  }
+)
+
+function Button({ /* props */ }) {
+  // Component logic
+}
+
+export { Button, buttonVariants }
+```
+
+## shadcn/ui Usage Guidelines
+1. Use shadcn/ui components as the foundation for UI elements
+2. Follow the shadcn/ui New York style variant as configured in `components.json`
+3. Components are sourced from the `/components/ui` directory
+4. Customize components using the established Tailwind classes and variants
+5. When adding new shadcn/ui components:
+   - Use the shadcn/ui CLI or copy the component code from the documentation
+   - Place them in the `/components/ui` directory
+   - Maintain the existing component structure and naming conventions
+6. Reference the official shadcn/ui documentation for component API and customization options
+7. Leverage the configured aliases in `components.json` for imports:
+   ```js
+   // components.json aliases
+   "aliases": {
+     "components": "@/components",
+     "utils": "@/lib/utils",
+     "ui": "@/components/ui",
+     "lib": "@/lib",
+     "hooks": "@/hooks"
+   }
+   ```
+
+## Styling Conventions
+1. Use Tailwind CSS for styling with the `cn` utility for class merging
+2. Use CSS variables for theming defined in globals.css, following the shadcn/ui theming system
+3. Use the `cn()` utility from `/src/lib/utils.ts` to merge class names:
+
+```jsx
+import { cn } from "@/lib/utils"
+
+// Usage:
+className={cn("base-classes", conditionalClasses, props.className)}
+```
+
+4. Use Radix UI primitives through shadcn/ui components for accessible UI elements
+5. Follow the design system's spacing, typography, and color scales defined in the shadcn/ui theme
+6. Use design tokens from the Tailwind config for consistency
+7. For custom styles beyond what shadcn/ui provides, maintain consistency with the established design system
+
+## State Management
+1. Use React hooks for component state
+2. Custom hooks for reusable logic should be placed in the `/hooks` directory
+3. Follow React's rules of hooks
+
+## Import Conventions
+1. Use absolute imports with `@/` alias:
+   - `import { cn } from "@/lib/utils"`
+   - `import { Button } from "@/components/ui/button"`
+2. Order imports: React, external libraries, internal components/utils
+
+## TypeScript Conventions
+1. Use TypeScript for all files (`.tsx` for components, `.ts` for utilities)
+2. Define prop types as interfaces or type aliases
+3. Use React.ComponentProps for extending HTML element props:
+   ```tsx
+   interface ButtonProps extends React.ComponentProps<"button"> {
+     variant?: "default" | "destructive" | "outline";
+     // Additional props
+   }
+   ```
+4. Use type inference where possible, but explicitly type function parameters and returns
+
+## Accessibility
+1. Use Radix UI primitives for accessible component foundations
+2. Include proper ARIA attributes where needed
+3. Ensure keyboard navigation works for all interactive elements
+4. Maintain proper focus management
+
+## Performance Considerations
+1. Memoize expensive calculations and callbacks with `useMemo` and `useCallback`
+2. Use dynamic imports for code splitting
+3. Optimize images using Next.js Image component
+4. Keep component re-renders to a minimum
+
+## Code Style
+1. Use functional components with hooks
+2. Prefer destructuring for props
+3. Use template literals for string concatenation
+4. Use optional chaining and nullish coalescing for safer code
+5. Maintain clear separation of concerns
+
+## Routing
+1. Use Next.js App Router for page routing
+2. Group routes logically in directories
+3. Use layout components for shared UI elements
+
+## Documentation
+1. Include JSDoc comments for complex functions
+2. Document props with TypeScript interfaces
+
+## When Adding New Components
+1. Follow the existing patterns for similar components
+2. Ensure new components are fully typed
+3. Maintain consistency with existing styling approach
+4. Use existing utility functions where appropriate
+5. Ensure components are accessible
