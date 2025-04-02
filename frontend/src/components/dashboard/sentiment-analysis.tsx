@@ -43,7 +43,7 @@ export function SentimentAnalysisCard({
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1.5">
               <ThumbsUp className="size-3.5 text-green-500" />
-              <span className="text-xs">Positive</span>
+              <span className="text-xs text-green-500">Positive</span>
             </div>
             <span className="text-xs font-medium">{data.positive}%</span>
           </div>
@@ -58,7 +58,7 @@ export function SentimentAnalysisCard({
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1.5">
               <CircleDashed className="size-3.5 text-blue-500" />
-              <span className="text-xs">Neutral</span>
+              <span className="text-xs text-blue-500">Neutral</span>
             </div>
             <span className="text-xs font-medium">{data.neutral}%</span>
           </div>
@@ -73,7 +73,7 @@ export function SentimentAnalysisCard({
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-1.5">
               <ThumbsDown className="size-3.5 text-red-500" />
-              <span className="text-xs">Negative</span>
+              <span className="text-xs text-red-500">Negative</span>
             </div>
             <span className="text-xs font-medium">{data.negative}%</span>
           </div>

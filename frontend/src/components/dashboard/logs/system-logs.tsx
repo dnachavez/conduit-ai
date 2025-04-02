@@ -258,7 +258,7 @@ export function SystemLogs({
               <tr className="border-b border-border/50">
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Log ID</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Timestamp</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">User/Actor</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">User</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Role</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Event Type</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Module</th>

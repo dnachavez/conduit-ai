@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle } from "lucide-react"
+import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle, Clock } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   Card,
@@ -151,11 +151,26 @@ export function ActiveCalls({
   const getSentimentIndicator = (sentiment: SentimentType) => {
     switch (sentiment) {
       case "positive":
-        return <ThumbsUp className="size-3.5 text-green-500" />
+        return (
+          <>
+            <ThumbsUp className="size-3.5 text-green-500" />
+            <span className="text-xs text-green-500 capitalize">{sentiment}</span>
+          </>
+        )
       case "negative":
-        return <ThumbsDown className="size-3.5 text-red-500" />
+        return (
+          <>
+            <ThumbsDown className="size-3.5 text-red-500" />
+            <span className="text-xs text-red-500 capitalize">{sentiment}</span>
+          </>
+        )
       case "neutral":
-        return <CircleDashed className="size-3.5 text-blue-500" />
+        return (
+          <>
+            <CircleDashed className="size-3.5 text-blue-500" />
+            <span className="text-xs text-blue-500 capitalize">{sentiment}</span>
+          </>
+        )
       default:
         return null
     }
@@ -193,28 +208,35 @@ export function ActiveCalls({
             }
             
             .gradient-text {
-              background: linear-gradient(to right, #542cde, #0faed8, #542cde);
+              background: linear-gradient(to right, #a99cf2, #8de3f4, #a99cf2);
               background-size: 200% auto;
               animation: shimmer 3s infinite linear;
               -webkit-background-clip: text;
               -webkit-text-fill-color: transparent;
               background-clip: text;
             }
+
+            .gradient-bg {
+              background: linear-gradient(to right, rgba(84, 44, 222, 0.55), rgba(15, 174, 216, 0.55), rgba(84, 44, 222, 0.55));
+              background-size: 200% auto;
+              animation: shimmer 3s infinite linear;
+              border: none;
+            }
           `}</style>
-          <Sparkles className="size-3.5 text-[#542cde] sparkle-icon" />
-          <span className="text-xs font-medium gradient-text">
-            {agentType}
-          </span>
+          <Badge variant="outline" className="gradient-bg text-white border-transparent text-xs inline-flex items-center gap-1">
+            <Sparkles className="size-3.5 sparkle-icon text-[#8de3f4]" />
+            <span className="capitalize gradient-text">{agentType}</span>
+          </Badge>
         </div>
       );
     }
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center gap-1.5">
-            <User className="size-3.5 text-white" />
-            <span className="text-xs">{agentType}</span>
-          </div>
+          <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-transparent text-xs inline-flex items-center gap-1">
+            <User className="size-3.5" />
+            <span className="capitalize">{agentType}</span>
+          </Badge>
         </TooltipTrigger>
         <TooltipContent>
           <p className="text-xs">Human Agent</p>
@@ -251,9 +273,12 @@ export function ActiveCalls({
     }
     
     return (
-      <span className={`font-medium ${colorClass}`}>
-        {formattedText}
-      </span>
+      <div className="flex items-center gap-1.5">
+        <Clock className={`size-3.5 ${colorClass}`} />
+        <span className={`text-xs font-medium ${colorClass}`}>
+          {formattedText}
+        </span>
+      </div>
     );
   }
 
@@ -352,7 +377,6 @@ export function ActiveCalls({
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       {getSentimentIndicator(call.sentiment)}
-                      <span className="text-xs capitalize">{call.sentiment}</span>
                     </div>
                   </td>
                   <td className="px-4 py-3">
