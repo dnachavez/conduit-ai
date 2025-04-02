@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles } from "lucide-react"
+import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   Card,
@@ -18,6 +18,11 @@ import {
   PopoverContent,
   PopoverTrigger 
 } from "@/components/ui/popover"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,7 +81,7 @@ export function ActiveCalls({
       id: "6ba7b811-9dad-11d1-80b4-00c04fd430c8",
       caller: "Ana Reyes",
       callerPhone: "+63 929 999 8888",
-      agentType: "AI Agent",
+      agentType: "Jane Doe",
       duration: "01:45",
       status: "transferred",
       sentiment: "neutral",
@@ -87,7 +92,7 @@ export function ActiveCalls({
       id: "6ba7b812-9dad-11d1-80b4-00c04fd430c8",
       caller: "Jose Rizal",
       callerPhone: "+63 999 444 3333",
-      agentType: "Jane Doe",
+      agentType: "AI Agent",
       duration: "00:52",
       status: "ended",
       sentiment: "neutral",
@@ -97,14 +102,44 @@ export function ActiveCalls({
   ]
 
   // Function to get appropriate status badge styling
-  const getStatusBadge = (status: CallStatus) => {
+  const getStatusBadge = (status: CallStatus, agentType: string) => {
+    const isHumanAgent = agentType !== "AI Agent";
+    
     switch (status) {
       case "ongoing":
         return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-xs">Ongoing</Badge>
       case "escalated":
-        return <Badge variant="outline" className="bg-orange-500/10 text-orange-500 border-orange-500/20 text-xs">Escalated</Badge>
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="bg-orange-500/10 text-orange-500 border-orange-500/20 text-xs">Escalated</Badge>
+            {isHumanAgent && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertTriangle className="size-3.5 text-orange-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Escalated to human agent (negative indicator)</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        );
       case "transferred":
-        return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 text-xs">Transferred</Badge>
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20 text-xs">Transferred</Badge>
+            {isHumanAgent && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <CheckCircle className="size-3.5 text-yellow-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">Transferred to human agent (positive indicator)</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        );
       case "ended":
         return <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-xs">Ended</Badge>
       default:
@@ -173,7 +208,19 @@ export function ActiveCalls({
         </div>
       );
     }
-    return <span className="text-xs">{agentType}</span>;
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center gap-1.5">
+            <User className="size-3.5 text-white" />
+            <span className="text-xs">{agentType}</span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p className="text-xs">Human Agent</p>
+        </TooltipContent>
+      </Tooltip>
+    );
   };
 
   // Function to format and style duration
@@ -301,7 +348,7 @@ export function ActiveCalls({
                   </td>
                   <td className="px-4 py-3 text-xs">{renderAgentType(call.agentType)}</td>
                   <td className="px-4 py-3 text-xs">{formatDuration(call.duration)}</td>
-                  <td className="px-4 py-3">{getStatusBadge(call.status)}</td>
+                  <td className="px-4 py-3">{getStatusBadge(call.status, call.agentType)}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
                       {getSentimentIndicator(call.sentiment)}
@@ -361,12 +408,19 @@ export function ActiveCalls({
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-center">
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
-                            <MoreVertical className="size-3.5" />
-                            <span className="sr-only">Open menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                                <MoreVertical className="size-3.5" />
+                                <span className="sr-only">Open menu</span>
+                              </Button>
+                            </DropdownMenuTrigger>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>More actions</p>
+                          </TooltipContent>
+                        </Tooltip>
                         <DropdownMenuContent align="end" className="w-[200px]">
                           <DropdownMenuLabel className="text-xs font-semibold">Call Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
@@ -378,7 +432,7 @@ export function ActiveCalls({
                             <Copy className="mr-2 size-3.5" />
                             <span>Copy Call ID</span>
                           </DropdownMenuItem> */}
-                          {call.status === "ongoing" && (
+                          {call.status !== "ended" && (
                             <DropdownMenuItem onClick={(e) => handleEndCall(call.id, e)} className="bg-red-500/10 text-red-500 hover:bg-red-500/20 focus:bg-red-500/20 focus:text-red-500 text-xs">
                               <PhoneOff className="mr-2 size-3.5 text-red-500" />
                               <span>End Call</span>
