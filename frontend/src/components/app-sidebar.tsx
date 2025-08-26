@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { usePathname } from "next/navigation"
 import {
   BookOpen,
   History,
@@ -21,112 +22,119 @@ import {
   SidebarHeader,
 } from "@/components/ui/sidebar"
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Acme Inc",
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Overview",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "Dashboard",
-          url: "/dashboard",
-        },
-        {
-          title: "Monitoring",
-          url: "/dashboard/monitoring",
-        },
-        {
-          title: "Logs",
-          url: "/dashboard/logs",
-        },
-      ],
-    },
-    {
-      title: "History",
-      url: "#",
-      icon: History,
-      items: [
-        {
-          title: "Calls",
-          url: "#",
-        },
-        {
-          title: "Agents",
-          url: "#",
-        },
-        {
-          title: "Transcripts",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Workspace",
-      url: "#",
-      icon: GalleryVerticalEnd,
-      items: [
-        {
-          title: "Members",
-          url: "workspace/members",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "settings/general",
-        },
-        {
-          title: "Integrations",
-          url: "settings/integrations",
-        },
-        {
-          title: "Knowledgebase",
-          url: "settings/knowledgebase",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "Support",
-      url: "support",
-      icon: LifeBuoy,
-    },
-    {
-      title: "Documentation",
-      url: "docs",
-      icon: BookOpen,
-    },
-  ],
-}
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname()
+
+  // Determine which sections should be active based on current path
+  const isOverviewActive = pathname.startsWith('/dashboard')
+  const isHistoryActive = pathname.startsWith('/history')
+
+  const data = {
+    user: {
+      name: "shadcn",
+      email: "m@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+    teams: [
+      {
+        name: "Acme Inc",
+        plan: "Enterprise",
+      },
+      {
+        name: "Acme Corp.",
+        plan: "Startup",
+      },
+      {
+        name: "Evil Corp.",
+        plan: "Free",
+      },
+    ],
+    navMain: [
+      {
+        title: "Overview",
+        url: "#",
+        icon: SquareTerminal,
+        isActive: isOverviewActive,
+        items: [
+          {
+            title: "Dashboard",
+            url: "/dashboard",
+          },
+          {
+            title: "Monitoring",
+            url: "/dashboard/monitoring",
+          },
+          {
+            title: "Logs",
+            url: "/dashboard/logs",
+          },
+        ],
+      },
+      {
+        title: "History",
+        url: "#",
+        icon: History,
+        isActive: isHistoryActive,
+        items: [
+          {
+            title: "Calls",
+            url: "/history/calls",
+          },
+          {
+            title: "Agents",
+            url: "#",
+          },
+          {
+            title: "Transcripts",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Workspace",
+        url: "#",
+        icon: GalleryVerticalEnd,
+        items: [
+          {
+            title: "Members",
+            url: "workspace/members",
+          },
+        ],
+      },
+      {
+        title: "Settings",
+        url: "#",
+        icon: Settings2,
+        items: [
+          {
+            title: "General",
+            url: "settings/general",
+          },
+          {
+            title: "Integrations",
+            url: "settings/integrations",
+          },
+          {
+            title: "Knowledgebase",
+            url: "settings/knowledgebase",
+          },
+        ],
+      },
+    ],
+    navSecondary: [
+      {
+        title: "Support",
+        url: "support",
+        icon: LifeBuoy,
+      },
+      {
+        title: "Documentation",
+        url: "docs",
+        icon: BookOpen,
+      },
+    ],
+  }
+
   return (
     <Sidebar variant="inset" collapsible="icon" {...props}>
       <SidebarHeader>
