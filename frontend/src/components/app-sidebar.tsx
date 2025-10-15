@@ -3,6 +3,7 @@
 import * as React from "react"
 import { usePathname } from "next/navigation"
 import {
+  BarChart3,
   BookOpen,
   History,
   GalleryVerticalEnd,
@@ -28,6 +29,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   // Determine which sections should be active based on current path
   const isOverviewActive = pathname.startsWith('/dashboard')
   const isHistoryActive = pathname.startsWith('/history')
+  const isReportsActive = pathname.startsWith('/reports')
 
   const data = {
     user: {
@@ -85,7 +87,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/history/agents",
           },
           {
-            title: "Transcripts",
+            title: "Customers",
+            url: "#",
+          },
+        ],
+      },
+      {
+        title: "Reports",
+        url: "#",
+        icon: BarChart3,
+        isActive: isReportsActive,
+        items: [
+          {
+            title: "Reporting",
+            url: "#",
+          },
+          {
+            title: "Analytics",
             url: "#",
           },
         ],
