@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle, Clock, CalendarDays, Filter } from "lucide-react"
+import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle, Clock, CircleCheck, HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   Card,
@@ -31,14 +31,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
 interface CallHistoryProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 type CallStatus = "ongoing" | "escalated" | "transferred" | "ended"
@@ -65,9 +57,6 @@ export function CallHistory({
   className,
   ...props
 }: CallHistoryProps) {
-  const [statusFilter, setStatusFilter] = React.useState<string>("all")
-  const [sentimentFilter, setSentimentFilter] = React.useState<string>("all")
-  const [agentFilter, setAgentFilter] = React.useState<string>("all")
 
   // Extended example data for call history
   const callHistory: CallEntry[] = [
@@ -187,18 +176,8 @@ export function CallHistory({
     }
   ]
 
-  // Filter the calls based on selected filters
-  const filteredCalls = React.useMemo(() => {
-    return callHistory.filter(call => {
-      if (statusFilter !== "all" && call.status !== statusFilter) return false
-      if (sentimentFilter !== "all" && call.sentiment !== sentimentFilter) return false
-      if (agentFilter !== "all") {
-        if (agentFilter === "ai" && call.agentType !== "AI Agent") return false
-        if (agentFilter === "human" && call.agentType === "AI Agent") return false
-      }
-      return true
-    })
-  }, [statusFilter, sentimentFilter, agentFilter, callHistory])
+  // Display all calls now that header filters are removed
+  const filteredCalls = callHistory
 
   // Function to get appropriate status badge styling
   const getStatusBadge = (status: CallStatus, agentType: string) => {
@@ -206,7 +185,19 @@ export function CallHistory({
     
     switch (status) {
       case "ongoing":
-        return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-xs">Ongoing</Badge>
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-xs">Ongoing</Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Clock className="size-3.5 text-blue-500" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Call in progress</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        );
       case "escalated":
         return (
           <div className="flex items-center gap-1.5">
@@ -240,9 +231,33 @@ export function CallHistory({
           </div>
         );
       case "ended":
-        return <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-xs">Ended</Badge>
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-xs">Resolved</Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CircleCheck className="size-3.5 text-green-500" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Call completed successfully</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        );
       default:
-        return <Badge variant="outline" className="text-xs">Unknown</Badge>
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="text-xs">Unknown</Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="size-3.5 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Status unavailable</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        );
     }
   }
 
@@ -434,43 +449,8 @@ export function CallHistory({
           <div>
             <CardTitle className="text-sm font-medium">Call History</CardTitle>
             <CardDescription className="text-xs">
-              Complete history of all calls in the system - ongoing, escalated, transferred, and ended.
+              Complete history of all calls in the system.
             </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-32 h-8 text-xs">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="ongoing">Ongoing</SelectItem>
-                <SelectItem value="escalated">Escalated</SelectItem>
-                <SelectItem value="transferred">Transferred</SelectItem>
-                <SelectItem value="ended">Ended</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sentimentFilter} onValueChange={setSentimentFilter}>
-              <SelectTrigger className="w-32 h-8 text-xs">
-                <SelectValue placeholder="Sentiment" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Sentiment</SelectItem>
-                <SelectItem value="positive">Positive</SelectItem>
-                <SelectItem value="neutral">Neutral</SelectItem>
-                <SelectItem value="negative">Negative</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={agentFilter} onValueChange={setAgentFilter}>
-              <SelectTrigger className="w-32 h-8 text-xs">
-                <SelectValue placeholder="Agent" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Agents</SelectItem>
-                <SelectItem value="ai">AI Agent</SelectItem>
-                <SelectItem value="human">Human Agent</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </div>
       </CardHeader>
@@ -483,7 +463,6 @@ export function CallHistory({
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Caller</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Agent</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Duration</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Started</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Status</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Sentiment</th>
                 <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">Context</th>
@@ -512,14 +491,20 @@ export function CallHistory({
                     <div className="text-xs text-muted-foreground">{call.callerPhone}</div>
                   </td>
                   <td className="px-4 py-3 text-xs">{renderAgentType(call.agentType)}</td>
-                  <td className="px-4 py-3 text-xs">{formatDuration(call.duration)}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <CalendarDays className="size-3.5 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">
-                        {formatDateTime(call.startTime)}
-                      </span>
-                    </div>
+                  <td className="px-4 py-3 text-xs">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="inline-flex">
+                          {formatDuration(call.duration)}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <div className="space-y-1">
+                          <p>Start: {formatDateTime(call.startTime)}</p>
+                          <p>End: {call.endTime ? formatDateTime(call.endTime) : "Ongoing"}</p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
                   </td>
                   <td className="px-4 py-3">{getStatusBadge(call.status, call.agentType)}</td>
                   <td className="px-4 py-3">
@@ -548,12 +533,6 @@ export function CallHistory({
                                 </div>
                               ))}
                             </div>
-                            {call.resolution && (
-                              <div className="mt-3 pt-2 border-t border-border/50">
-                                <h5 className="text-xs font-semibold mb-1">Resolution</h5>
-                                <p className="text-xs text-muted-foreground">{call.resolution}</p>
-                              </div>
-                            )}
                           </div>
                         </PopoverContent>
                       </Popover>

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle, Clock } from "lucide-react"
+import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle, Clock, CircleCheck, HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   Card,
@@ -107,7 +107,19 @@ export function ActiveCalls({
     
     switch (status) {
       case "ongoing":
-        return <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-xs">Ongoing</Badge>
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-xs">Ongoing</Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Clock className="size-3.5 text-blue-500" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Call in progress</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        );
       case "escalated":
         return (
           <div className="flex items-center gap-1.5">
@@ -141,9 +153,33 @@ export function ActiveCalls({
           </div>
         );
       case "ended":
-        return <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20 text-xs">Ended</Badge>
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-xs">Resolved</Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <CircleCheck className="size-3.5 text-green-500" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Call completed successfully</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        );
       default:
-        return <Badge variant="outline" className="text-xs">Unknown</Badge>
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge variant="outline" className="text-xs">Unknown</Badge>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="size-3.5 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs">Status unavailable</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        );
     }
   }
 
