@@ -383,7 +383,7 @@ export function AgentRoster({
       {...props}
     >
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium">Agent Roster</CardTitle>
+        <CardTitle className="text-sm font-medium">Agents</CardTitle>
         <CardDescription className="text-xs">
           Real-time view of all human agents with live productivity and service-quality indicators.
         </CardDescription>

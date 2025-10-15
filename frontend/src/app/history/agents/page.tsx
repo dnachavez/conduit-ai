@@ -20,7 +20,7 @@ import { Coffee, Headset, UserCheck, Users } from "lucide-react"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Agent Roster",
+  title: "Agents",
 }
 
 interface AgentSummaryMetric {
@@ -94,7 +94,7 @@ export default function Page() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-3 p-4 pt-0">
-          <h1 className="text-2xl font-semibold">Agent Roster</h1>
+          <h1 className="text-2xl font-semibold">Agents</h1>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {agentSummaryMetrics.map((metric) => {
               const Icon = metric.icon
