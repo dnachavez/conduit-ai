@@ -82,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: "Agents",
-            url: "#",
+            url: "/history/agents",
           },
           {
             title: "Transcripts",

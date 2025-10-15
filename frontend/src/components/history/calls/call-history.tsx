@@ -31,7 +31,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-interface CallHistoryProps extends React.HTMLAttributes<HTMLDivElement> {}
+type CallHistoryProps = React.HTMLAttributes<HTMLDivElement>
 
 type CallStatus = "ongoing" | "escalated" | "transferred" | "ended"
 type SentimentType = "positive" | "negative" | "neutral"
@@ -410,16 +410,6 @@ export function CallHistory({
 
   const handleRowClick = (callId: string) => {
     console.log(`Call ${callId} details requested`);
-  }
-  
-  const handleCopyId = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(id);
-      console.log("Call ID copied to clipboard:", id);
-    } catch (error) {
-      console.error("Failed to copy call ID:", error);
-    }
   }
   
   const handleViewDetails = (id: string, e: React.MouseEvent) => {

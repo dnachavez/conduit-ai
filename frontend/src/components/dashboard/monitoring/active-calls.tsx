@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, Copy, PhoneOff, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle, Clock, CircleCheck, HelpCircle } from "lucide-react"
+import { ThumbsUp, CircleDashed, ThumbsDown, FileIcon, MessageSquare, InfoIcon, MoreVertical, Eye, PhoneOff, Download, FileEdit, Flag, Sparkles, User, AlertTriangle, CheckCircle, Clock, CircleCheck, HelpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   Card,
@@ -32,7 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-interface ActiveCallsProps extends React.HTMLAttributes<HTMLDivElement> {}
+type ActiveCallsProps = React.HTMLAttributes<HTMLDivElement>
 
 type CallStatus = "ongoing" | "escalated" | "transferred" | "ended"
 type SentimentType = "positive" | "negative" | "neutral"
@@ -323,16 +323,6 @@ export function ActiveCalls({
     console.log(`Call ${callId} details requested`);
   }
   
-  const handleCopyId = async (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    try {
-      await navigator.clipboard.writeText(id);
-      console.log("Call ID copied to clipboard:", id);
-    } catch (error) {
-      console.error("Failed to copy call ID:", error);
-    }
-  }
-  
   const handleEndCall = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     console.log("Ending call:", id);
@@ -488,10 +478,6 @@ export function ActiveCalls({
                             <Eye className="mr-2 size-3.5" />
                             <span>View Details</span>
                           </DropdownMenuItem>
-                          {/* <DropdownMenuItem onClick={(e) => handleCopyId(call.id, e)} className="text-xs">
-                            <Copy className="mr-2 size-3.5" />
-                            <span>Copy Call ID</span>
-                          </DropdownMenuItem> */}
                           {call.status !== "ended" && (
                             <DropdownMenuItem onClick={(e) => handleEndCall(call.id, e)} className="bg-red-500/10 text-red-500 hover:bg-red-500/20 focus:bg-red-500/20 focus:text-red-500 text-xs">
                               <PhoneOff className="mr-2 size-3.5 text-red-500" />

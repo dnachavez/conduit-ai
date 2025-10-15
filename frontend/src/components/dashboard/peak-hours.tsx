@@ -77,10 +77,8 @@ export function PeakHours({
   const isMobile = useIsMobile()
   const [selectedTimeframe, setSelectedTimeframe] = React.useState(timeframe)
 
-  // For demonstration purposes - would be replaced with actual filtering logic
-  const filteredData = React.useMemo(() => {
-    return peakHoursData
-  }, [selectedTimeframe])
+  // Placeholder until timeframe-specific filtering is wired up
+  const filteredData = peakHoursData
 
   return (
     <Card className={cn("bg-muted/50 border-0 @container/card", className)} {...props}>

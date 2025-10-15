@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Eye, MoreVertical, Download, FileEdit, Shield, Activity, Clock, User, FileText, Settings, Server, Info, AlertCircle, CheckCircle, XCircle } from "lucide-react"
+import { Eye, MoreVertical, Download, FileEdit, Shield, Activity, Clock, User, Settings, Server, Info, CheckCircle, XCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
   Card,
@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-interface SystemLogsProps extends React.HTMLAttributes<HTMLDivElement> {}
+type SystemLogsProps = React.HTMLAttributes<HTMLDivElement>
 
 type LogStatus = "successful" | "failed" | "pending"
 type EventType = "login" | "logout" | "add" | "update" | "delete" | "settings_change" | "access"
