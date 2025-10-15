@@ -6,14 +6,15 @@ alwaysApply: true
 # Frontend Codebase Conventions and Rules
 
 ## Project Overview
-- Framework: Next.js 15.2.4 with App Router
-- React: React 19
-- TypeScript: Fully typed codebase
-- CSS: Tailwind CSS 4.0.17
+- Framework: Next.js 15.2.4 (App Router, Turbopack dev server)
+- React: React 19.1.0 with React DOM 19.1.0
+- TypeScript: TypeScript 5.8.2 with strict compiler options
+- CSS Utility: Tailwind CSS 4.0.17 with tailwind-merge 3.1.0
 - Component Library: shadcn/ui (New York style variant)
-- UI Components: Custom components built on Radix UI primitives
-- State Management: React hooks
-- Icon Library: Lucide React
+- UI Foundations: Custom components built on Radix UI primitives
+- State Management: React Query (TanStack Query) for server state; Redux Toolkit store for client state
+- Icon Library: lucide-react 0.486.0
+- Data Visualization: Recharts 2.15.1
 
 ## Directory Structure
 - `/frontend/src/app`: Next.js App Router pages and layouts
@@ -101,9 +102,10 @@ className={cn("base-classes", conditionalClasses, props.className)}
 7. For custom styles beyond what shadcn/ui provides, maintain consistency with the established design system
 
 ## State Management
-1. Use React hooks for component state
-2. Custom hooks for reusable logic should be placed in the `/hooks` directory
-3. Follow React's rules of hooks
+1. Use React Query (TanStack Query) for server-state fetching, caching, mutations, and background refresh.
+2. Use Redux Toolkit for cross-cutting client state; organize slices and the store setup in `/frontend/src/store`, exporting typed hooks (e.g., `useAppDispatch`, `useAppSelector`).
+3. Keep purely local UI state in component-level React hooks.
+4. Place reusable hooks in `/frontend/src/hooks` and comply with React's rules of hooks.
 
 ## Import Conventions
 1. Use absolute imports with `@/` alias:
