@@ -1,7 +1,21 @@
 "use client"
 
 import * as React from "react"
-import { Activity, AlertTriangle, Coffee, Headset, MoreVertical, Phone, TimerReset, UserCheck } from "lucide-react"
+import {
+  Activity,
+  AlertTriangle,
+  Coffee,
+  Download,
+  Eye,
+  FileEdit,
+  Flag,
+  Headset,
+  MoreVertical,
+  Phone,
+  PhoneOff,
+  TimerReset,
+  UserCheck,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -417,11 +431,24 @@ export function AgentRoster({
               </tr>
             </thead>
             <tbody>
-              {agents.map((agent) => (
-                <tr
-                  key={agent.id}
-                  className="border-b border-border/50 last:border-b-0"
-                >
+              {agents.map((agent) => {
+                const statusMeta = statusConfig[agent.status]
+                const StatusIcon = statusMeta.icon
+                const interaction = agent.currentInteraction
+                const timeInStateLabel = formatMinutes(agent.timeInStatusMinutes)
+                const lastBreakLabel = agent.lastBreakMinutesAgo
+                  ? `${formatMinutes(agent.lastBreakMinutesAgo)} ago`
+                  : "—"
+
+                const handleActionSelect = (action: string) => () => {
+                  console.log(`[Agent ${agent.id}] ${action}`)
+                }
+
+                return (
+                  <tr
+                    key={agent.id}
+                    className="border-b border-border/50 last:border-b-0"
+                  >
                   <td className="px-4 py-4 align-top">
                     <div className="flex items-start gap-3">
                       <Avatar className="h-9 w-9 border border-border/50">
@@ -616,30 +643,151 @@ export function AgentRoster({
                             <span className="sr-only">Open menu</span>
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-[200px]">
-                          <DropdownMenuLabel className="text-xs">
-                            Supervisor Actions
+                        <DropdownMenuContent align="end" className="w-[280px] p-0">
+                          <DropdownMenuLabel className="px-3 py-2 text-[10px] uppercase tracking-wide text-muted-foreground">
+                            Agent Snapshot
+                          </DropdownMenuLabel>
+                          <div className="space-y-3 px-3 pb-3 text-[11px] text-muted-foreground">
+                            <div className="flex items-center justify-between">
+                              <span className="flex items-center gap-1.5 text-foreground">
+                                <StatusIcon className="size-3.5 text-muted-foreground" />
+                                {statusMeta.label}
+                              </span>
+                              <span>In state {timeInStateLabel}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80">
+                                  Team
+                                </p>
+                                <p className="text-foreground">{agent.team}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80">
+                                  Site
+                                </p>
+                                <p className="text-foreground">{agent.site}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80">
+                                  Calls today
+                                </p>
+                                <p className="font-medium text-foreground">{agent.callsHandled}</p>
+                              </div>
+                              <div>
+                                <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80">
+                                  Avg handle time
+                                </p>
+                                <p className="text-foreground">
+                                  {formatSeconds(agent.ahtSeconds)}
+                                </p>
+                              </div>
+                            </div>
+                            {interaction ? (
+                              <div className="space-y-1.5 rounded-md border border-border/40 bg-background/60 p-2.5">
+                                <div className="flex items-center justify-between">
+                                  <Badge
+                                    variant="outline"
+                                    className={cn("text-[10px]", channelTone[interaction.channel])}
+                                  >
+                                    {interaction.channel}
+                                  </Badge>
+                                  <Badge
+                                    variant="outline"
+                                    className={cn(
+                                      "text-[10px]",
+                                      sentimentTone[interaction.sentiment]
+                                    )}
+                                  >
+                                    {interaction.sentiment}
+                                  </Badge>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Duration</span>
+                                  <span className="text-foreground">
+                                    {interaction.durationMinutes}m
+                                  </span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span>Call ID</span>
+                                  <CopyButton
+                                    value={interaction.callId}
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-6 px-2"
+                                    showTooltip={false}
+                                  >
+                                    <span className="font-mono text-[11px] text-foreground">
+                                      {formatCallId(interaction.callId)}
+                                    </span>
+                                  </CopyButton>
+                                </div>
+                                <div>
+                                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground/80">
+                                    Customer
+                                  </p>
+                                  <p className="text-foreground">{interaction.customer}</p>
+                                </div>
+                                <div className="text-muted-foreground">
+                                  Topic:{" "}
+                                  <span className="text-foreground">{interaction.topic}</span>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="rounded-md border border-dashed border-border/60 bg-muted/40 px-2.5 py-2 text-muted-foreground/80">
+                                No live interaction · Last break {lastBreakLabel}
+                              </div>
+                            )}
+                          </div>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuLabel className="px-3 py-2 text-[10px] uppercase tracking-wide text-muted-foreground">
+                            Call Actions
                           </DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-xs">
-                            View timeline & adherence
+                          <DropdownMenuItem
+                            className="gap-2 px-3 py-2 text-xs"
+                            onSelect={handleActionSelect("View Details")}
+                          >
+                            <Eye className="size-3.5 text-muted-foreground" />
+                            <span>View Details</span>
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-xs">
-                            Whisper / barge request
+                          {interaction ? (
+                            <DropdownMenuItem
+                              className="gap-2 px-3 py-2 text-xs bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 focus:bg-rose-500/20 focus:text-rose-500"
+                              onSelect={handleActionSelect("End Call")}
+                            >
+                              <PhoneOff className="size-3.5 text-rose-500" />
+                              <span>End Call</span>
+                            </DropdownMenuItem>
+                          ) : null}
+                          <DropdownMenuItem
+                            className="gap-2 px-3 py-2 text-xs"
+                            onSelect={handleActionSelect("Download Transcript")}
+                          >
+                            <Download className="size-3.5 text-muted-foreground" />
+                            <span>Download Transcript</span>
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-xs">
-                            Send coaching note
+                          <DropdownMenuItem
+                            className="gap-2 px-3 py-2 text-xs"
+                            onSelect={handleActionSelect("Add Note")}
+                          >
+                            <FileEdit className="size-3.5 text-muted-foreground" />
+                            <span>Add Note</span>
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem className="text-xs">
-                            Mark for QA review
+                          <DropdownMenuItem
+                            className="gap-2 px-3 py-2 text-xs"
+                            onSelect={handleActionSelect("Flag for Review")}
+                          >
+                            <Flag className="size-3.5 text-muted-foreground" />
+                            <span>Flag for Review</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
                   </td>
                 </tr>
-              ))}
+              )
+              })}
             </tbody>
           </table>
         </div>
