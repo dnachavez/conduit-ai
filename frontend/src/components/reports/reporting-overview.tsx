@@ -2,16 +2,22 @@
 
 import * as React from "react"
 import {
+  AlertTriangle,
   CalendarClock,
   Check,
+  CheckCircle2,
   ChevronsUpDown,
+  Clock3,
   Download,
   Eye,
-  Files,
+  Gauge,
   Layers,
   MoreVertical,
   Phone,
   Server,
+  ShieldCheck,
+  TrendingDown,
+  TrendingUp,
   UserCircle,
   Users,
 } from "lucide-react"
@@ -38,6 +44,7 @@ import {
 } from "@/components/ui/tooltip"
 import { Input } from "@/components/ui/input"
 import { CopyButton } from "@/components/dashboard/monitoring/copy-button"
+import { Progress } from "@/components/ui/progress"
 
 type ReportCategory = "agent" | "call" | "system"
 type ReportScope = "entire" | "each"
@@ -132,6 +139,206 @@ const reports: ReportDescriptor[] = [
   },
 ]
 
+interface LeadershipSummaryMetric {
+  label: string
+  value: string
+  trend: string
+  icon: React.ElementType
+  tone: string
+}
+
+const leadershipSummaryMetrics: LeadershipSummaryMetric[] = [
+  {
+    label: "Service Level (30s)",
+    value: "87%",
+    trend: "Up 3 pts vs yesterday",
+    icon: Gauge,
+    tone: "text-emerald-500",
+  },
+  {
+    label: "Average Handle Time",
+    value: "6m 12s",
+    trend: "Goal 6m · Balanced staffing",
+    icon: Clock3,
+    tone: "text-sky-500",
+  },
+  {
+    label: "First Contact Resolution",
+    value: "78%",
+    trend: "Down 2 pts vs last week",
+    icon: CheckCircle2,
+    tone: "text-amber-500",
+  },
+  {
+    label: "QA Pass Rate",
+    value: "92%",
+    trend: "3 coaching items due today",
+    icon: ShieldCheck,
+    tone: "text-purple-500",
+  },
+]
+
+interface OperationsPulseMetric {
+  label: string
+  value: string
+  target: string
+  progress: number
+  delta: string
+  deltaTone: string
+}
+
+const operationsPulseMetrics: OperationsPulseMetric[] = [
+  {
+    label: "Average Speed of Answer",
+    value: "21s",
+    target: "Goal ≤ 30s",
+    progress: 70,
+    delta: "Within target",
+    deltaTone: "text-emerald-500",
+  },
+  {
+    label: "Oldest Call Waiting",
+    value: "1m 42s",
+    target: "Alert at 2m",
+    progress: 58,
+    delta: "Monitor premium queue",
+    deltaTone: "text-amber-500",
+  },
+  {
+    label: "Live Staffing",
+    value: "48 online",
+    target: "Need 46",
+    progress: 82,
+    delta: "SLA protected",
+    deltaTone: "text-emerald-500",
+  },
+]
+
+interface VolumeHighlight {
+  label: string
+  value: string
+  change: string
+  icon: React.ElementType
+  tone: string
+}
+
+const volumeHighlights: VolumeHighlight[] = [
+  {
+    label: "Calls Answered",
+    value: "1,284",
+    change: "+6% vs last week",
+    icon: TrendingUp,
+    tone: "text-primary",
+  },
+  {
+    label: "AI Deflected",
+    value: "312",
+    change: "24% deflection rate",
+    icon: Server,
+    tone: "text-sky-500",
+  },
+  {
+    label: "Abandon Rate",
+    value: "3.1%",
+    change: "-0.8 pts vs goal",
+    icon: TrendingDown,
+    tone: "text-emerald-500",
+  },
+  {
+    label: "Escalations",
+    value: "18",
+    change: "2 urgent pending",
+    icon: AlertTriangle,
+    tone: "text-amber-500",
+  },
+]
+
+interface QualityInsight {
+  label: string
+  value: string
+  context: string
+  tone?: string
+}
+
+const qualityInsights: QualityInsight[] = [
+  {
+    label: "QA Reviews Completed",
+    value: "57 / 64",
+    context: "11 remaining to hit weekly goal",
+  },
+  {
+    label: "CSAT (Last 7 Days)",
+    value: "4.5 / 5",
+    context: "Top drivers · Billing clarity, empathy",
+  },
+  {
+    label: "Detractor Alerts",
+    value: "5 follow-ups",
+    context: "2 require supervisor callbacks",
+    tone: "text-amber-500",
+  },
+  {
+    label: "Coaching Actions",
+    value: "9 in progress",
+    context: "3 due today · Keep notes updated",
+    tone: "text-purple-500",
+  },
+]
+
+interface TeamPerformanceRow {
+  team: string
+  supervisor: string
+  serviceLevel: number
+  aht: string
+  csat: number
+  fcr: number
+  occupancy: number
+  escalations: number
+}
+
+const teamPerformance: TeamPerformanceRow[] = [
+  {
+    team: "Billing L1",
+    supervisor: "Angela Reyes",
+    serviceLevel: 91,
+    aht: "5m 58s",
+    csat: 4.7,
+    fcr: 81,
+    occupancy: 88,
+    escalations: 1,
+  },
+  {
+    team: "General Support",
+    supervisor: "Miguel Santos",
+    serviceLevel: 84,
+    aht: "6m 20s",
+    csat: 4.5,
+    fcr: 76,
+    occupancy: 90,
+    escalations: 3,
+  },
+  {
+    team: "Retention Specialists",
+    supervisor: "Bianca Cruz",
+    serviceLevel: 79,
+    aht: "6m 55s",
+    csat: 4.2,
+    fcr: 71,
+    occupancy: 94,
+    escalations: 5,
+  },
+  {
+    team: "Enterprise Escalations",
+    supervisor: "Jerome dela Torre",
+    serviceLevel: 86,
+    aht: "7m 45s",
+    csat: 4.6,
+    fcr: 74,
+    occupancy: 92,
+    escalations: 4,
+  },
+]
+
 const categoryCopy: Record<ReportCategory, string> = {
   agent: "Agent",
   call: "Call",
@@ -182,20 +389,6 @@ const scopeBadgeConfig: Record<
     tone: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
     icon: UserCircle,
   },
-}
-
-const summaryIcons = {
-  total: Files,
-  agent: Users,
-  call: Phone,
-  system: Server,
-}
-
-const summaryIconTone: Record<keyof typeof summaryIcons, string> = {
-  total: "text-primary",
-  agent: "text-blue-500",
-  call: "text-emerald-500",
-  system: "text-purple-500",
 }
 
 const timeframeTone: Record<Exclude<TimeframeKey, "all">, string> = {
@@ -485,7 +678,7 @@ export function ReportingOverview({
   const [scope, setScope] = React.useState<ReportScope>("entire")
   const [timeframe, setTimeframe] = React.useState<TimeframeKey>("all")
   const [statusCopy, setStatusCopy] = React.useState<string>(
-    "Entire report ready. Adjust filters and generate when you're ready."
+    "Select filters to preview matching report definitions, then queue the exports you need."
   )
   const [openReportPopover, setOpenReportPopover] = React.useState<string | null>(
     null
@@ -503,6 +696,8 @@ export function ReportingOverview({
     })
   }, [category, scope, timeframe])
 
+  const matchingCount = filteredReports.length
+
   const totalReportsByCategory = React.useMemo(() => {
     return reports.reduce(
       (acc, report) => {
@@ -514,74 +709,273 @@ export function ReportingOverview({
     )
   }, [])
 
+  const reportStatusSummary = React.useMemo(() => {
+    return filteredReports.reduce(
+      (acc, report) => {
+        acc.total += 1
+        const statusKey = report.status.toLowerCase() as "ready" | "scheduled" | "draft"
+        acc[statusKey] += 1
+        return acc
+      },
+      { total: 0, ready: 0, scheduled: 0, draft: 0 }
+    )
+  }, [filteredReports])
+
+  const formatSummary = React.useMemo(() => {
+    const formats = new Set<FormatOption>()
+    filteredReports.forEach((report) => {
+      report.supportedFormats.forEach((format) => formats.add(format))
+    })
+    return Array.from(formats)
+  }, [filteredReports])
+
+  const formatCount = formatSummary.length
+
   const handleGenerateClick = React.useCallback(() => {
     setStatusCopy(
-      `Queued ${filteredReports.length || "no"} ${scope === "entire" ? "entire" : "detailed"} ${(category === "all" ? "report sets" : `${categoryCopy[category]} reports`).toLowerCase()} for export.`
+      `Queued ${matchingCount || "no"} ${scope === "entire" ? "roll-up" : "detail"} ${(category === "all" ? "reports" : `${categoryCopy[category]} reports`).toLowerCase()} across ${formatCount || "no"} format${formatCount === 1 ? "" : "s"}.`
     )
-  }, [category, filteredReports.length, scope])
+  }, [category, formatCount, matchingCount, scope])
 
   return (
     <div className={cn("flex flex-col gap-4", className)} {...props}>
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {([
-          {
-            key: "total",
-            label: "Ready to Generate",
-            value: filteredReports.length,
-            hint: "Matching current filters",
-            iconTone: summaryIconTone.total,
-          },
-          {
-            key: "agent",
-            label: "Agent Reports",
-            value: totalReportsByCategory.agent,
-            hint: "Each & entire coverage",
-            iconTone: summaryIconTone.agent,
-          },
-          {
-            key: "call",
-            label: "Call Reports",
-            value: totalReportsByCategory.call,
-            hint: "Outcomes & transcripts",
-            iconTone: summaryIconTone.call,
-          },
-          {
-            key: "system",
-            label: "System Reports",
-            value: totalReportsByCategory.system,
-            hint: "Health & audit events",
-            iconTone: summaryIconTone.system,
-          },
-        ] as const).map((metric) => {
-          const Icon = summaryIcons[metric.key as keyof typeof summaryIcons]
+        {leadershipSummaryMetrics.map((metric) => {
+          const Icon = metric.icon
           return (
-            <Card key={metric.key} className="bg-muted/50 border-0 shadow-none">
+            <Card key={metric.label} className="bg-muted/50 border-0 shadow-none">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {metric.label}
                 </CardTitle>
-                <Icon className={cn("size-4", metric.iconTone)} />
+                <Icon className={cn("size-4", metric.tone)} />
               </CardHeader>
               <CardContent className="space-y-1 pt-0">
                 <div className="text-xl font-semibold text-foreground">
                   {metric.value}
                 </div>
-                <CardDescription className="text-xs">{metric.hint}</CardDescription>
+                <CardDescription className="text-xs">{metric.trend}</CardDescription>
               </CardContent>
             </Card>
           )
         })}
       </div>
 
+      <div className="grid gap-4 xl:grid-cols-3">
+        <Card className="bg-muted/50 border-0 shadow-none">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Operations Pulse</CardTitle>
+            <CardDescription className="text-xs">
+              Watch queue health and staffing coverage in real time.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {operationsPulseMetrics.map((metric) => (
+              <div key={metric.label} className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                    {metric.label}
+                  </p>
+                  <span className="text-xs font-semibold text-foreground">
+                    {metric.value}
+                  </span>
+                </div>
+                <Progress value={metric.progress} className="h-1.5" />
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                  <span>{metric.target}</span>
+                  <span className={cn("font-medium", metric.deltaTone)}>
+                    {metric.delta}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-muted/50 border-0 shadow-none">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Volume & Demand</CardTitle>
+            <CardDescription className="text-xs">
+              Snapshot of today&apos;s workload across channels.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3">
+            {volumeHighlights.map((highlight) => {
+              const Icon = highlight.icon
+              return (
+                <div
+                  key={highlight.label}
+                  className="flex items-center justify-between rounded-lg border border-border/60 bg-background/60 p-3"
+                >
+                  <div className="space-y-1">
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                      {highlight.label}
+                    </p>
+                    <p className="text-lg font-semibold text-foreground">
+                      {highlight.value}
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">
+                      {highlight.change}
+                    </p>
+                  </div>
+                  <Icon className={cn("size-5", highlight.tone)} />
+                </div>
+              )
+            })}
+          </CardContent>
+        </Card>
+
+        <Card className="bg-muted/50 border-0 shadow-none">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Quality & Coaching</CardTitle>
+            <CardDescription className="text-xs">
+              Pinpoint where supervision and follow-ups are needed.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid gap-3">
+            {qualityInsights.map((insight) => (
+              <div
+                key={insight.label}
+                className="rounded-lg border border-border/60 bg-background/60 p-3"
+              >
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                  {insight.label}
+                </p>
+                <p className={cn("text-lg font-semibold", insight.tone || "text-foreground")}>
+                  {insight.value}
+                </p>
+                <p className="text-[11px] text-muted-foreground">{insight.context}</p>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="bg-muted/50 border-0 shadow-none">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-medium">Team Performance</CardTitle>
+          <CardDescription className="text-xs">
+            Compare queue health across teams to prioritise coaching and staffing moves.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="overflow-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border/50">
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Team
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Supervisor
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Service Level
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    AHT
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    CSAT
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    FCR
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Occupancy
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Escalations
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {teamPerformance.map((row) => (
+                  <tr key={row.team} className="border-b border-border/50 last:border-b-0">
+                    <td className="px-4 py-3 align-top">
+                      <p className="text-sm font-semibold text-foreground">{row.team}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        Target coverage · 85% / 30s
+                      </p>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <p className="text-sm text-foreground">{row.supervisor}</p>
+                      <p className="text-[11px] text-muted-foreground">Shift lead</p>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <span
+                        className={cn(
+                          "text-sm font-semibold",
+                          row.serviceLevel >= 85
+                            ? "text-emerald-500"
+                            : row.serviceLevel >= 80
+                              ? "text-amber-500"
+                              : "text-red-500"
+                        )}
+                      >
+                        {row.serviceLevel}%
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">Goal ≥ 85%</p>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <span className="text-sm font-semibold text-foreground">
+                        {row.aht}
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">Goal ≤ 6m 30s</p>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <span className="text-sm font-semibold text-foreground">
+                        {row.csat.toFixed(1)} / 5
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">Customer rating</p>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <span
+                        className={cn(
+                          "text-sm font-semibold",
+                          row.fcr >= 75 ? "text-emerald-500" : "text-amber-500"
+                        )}
+                      >
+                        {row.fcr}%
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">First contact</p>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <span className="text-sm font-semibold text-foreground">
+                        {row.occupancy}%
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">Live occupancy</p>
+                    </td>
+                    <td className="px-4 py-3 align-top">
+                      <span
+                        className={cn(
+                          "text-sm font-semibold",
+                          row.escalations > 3 ? "text-amber-500" : "text-foreground"
+                        )}
+                      >
+                        {row.escalations}
+                      </span>
+                      <p className="text-[11px] text-muted-foreground">
+                        Cases requiring follow-up
+                      </p>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card className="bg-muted/50 border-0 shadow-none">
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium">Report Builder</CardTitle>
           <CardDescription className="text-xs">
-            Choose the report category, scope, and output preferences before generating an export.
+            Filter the catalog, review status, and generate exports for your leads.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <div className="space-y-1.5">
               <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
                 Report Category
@@ -622,12 +1016,68 @@ export function ReportingOverview({
               />
             </div>
           </div>
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-lg border border-border/60 bg-background/60 p-3">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Matching definitions
+              </p>
+              <p className="text-lg font-semibold text-foreground">{matchingCount}</p>
+              <p className="text-[11px] text-muted-foreground">
+                {matchingCount
+                  ? "Update filters to refine the export scope."
+                  : "No matches yet · adjust filters above."}
+              </p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-background/60 p-3">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Ready now
+              </p>
+              <p className="text-lg font-semibold text-foreground">
+                {reportStatusSummary.ready}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Ready to generate immediately
+              </p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-background/60 p-3">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Scheduled refreshes
+              </p>
+              <p className="text-lg font-semibold text-foreground">
+                {reportStatusSummary.scheduled}
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Auto-generated on cadence
+              </p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-background/60 p-3">
+              <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                Available formats
+              </p>
+              <p className="text-lg font-semibold text-foreground">{formatCount}</p>
+              <p className="text-[11px] text-muted-foreground">
+                {formatSummary.length
+                  ? formatSummary.join(" · ")
+                  : "Formats appear once reports match."}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-muted-foreground">
+            <span>Draft definitions · {reportStatusSummary.draft}</span>
+            <span>
+              Catalog coverage · Agent {totalReportsByCategory.agent} · Call {totalReportsByCategory.call} · System {totalReportsByCategory.system}
+            </span>
+          </div>
           <div className="flex flex-col gap-2 rounded-lg border border-dashed border-border/60 bg-background/60 p-3 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
             <div>
               <p className="font-medium text-foreground">
                 {scopeCopy[scope]} report selection
               </p>
-              <p className="text-[11px]">{summaryCopy[scope]}</p>
+              <p className="text-[11px]">
+                {matchingCount
+                  ? `${matchingCount} definition${matchingCount === 1 ? "" : "s"} aligned to ${scopeCopy[scope].toLowerCase()} filters.`
+                  : summaryCopy[scope]}
+              </p>
             </div>
             <Button
               size="sm"
@@ -646,75 +1096,78 @@ export function ReportingOverview({
         <CardHeader className="pb-3">
           <CardTitle className="text-sm font-medium">Report Library</CardTitle>
           <CardDescription className="text-xs">
-            {filteredReports.length
-              ? `Showing ${filteredReports.length} result${filteredReports.length === 1 ? "" : "s"} that match your filters.`
+            {matchingCount
+              ? `Showing ${matchingCount} result${matchingCount === 1 ? "" : "s"} that match your filters.`
               : "No reports match these filters. Adjust the scope or timeframe to continue."}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="overflow-auto">
-            <table className="w-full text-sm">
+            <table className="w-full">
               <thead>
                 <tr className="border-b border-border/50">
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">
                     Report ID
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">
                     Report
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">
                     Category
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">
                     Scope
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">
                     Timeframe
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2 text-left text-xs font-medium text-muted-foreground">
                     Action
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {filteredReports.map((report) => (
-                  <tr key={report.id} className="border-b border-border/50 last:border-b-0">
-                    <td className="px-4 py-4 align-top">
+                  <tr
+                    key={report.id}
+                    className="border-b border-border/50 last:border-b-0 hover:bg-accent/5 transition-colors"
+                  >
+                    <td className="px-4 py-3 align-middle text-xs font-mono">
                       <CopyButton
                         value={report.id}
                         size="sm"
                         variant="ghost"
-                        className="h-6 w-6 rounded-full font-mono text-[11px]"
+                        className="h-6 w-6 rounded-full"
                       >
                         {formatReportId(report.id)}
                       </CopyButton>
                     </td>
-                    <td className="px-4 py-4 align-top">
-                      <div className="space-y-1">
-                        <p className="text-sm font-semibold text-foreground">
+                    <td className="px-4 py-3 align-middle">
+                      <div className="space-y-1 text-xs">
+                        <p className="font-semibold text-foreground">
                           {report.name}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-muted-foreground">
                           {report.description}
                         </p>
-                        <p className="text-[11px] text-muted-foreground/75">
+                        <p className="text-muted-foreground/75">
                           Last generated · {report.lastGenerated}
                         </p>
                       </div>
                     </td>
-                    <td className="px-4 py-4 align-top">
+                    <td className="px-4 py-3 align-middle">
                       {renderCategoryBadge(report.category)}
                     </td>
-                    <td className="px-4 py-4 align-top">
+                    <td className="px-4 py-3 align-middle">
                       {renderScopeBadge(report.scope)}
                     </td>
-                    <td className="px-4 py-4 align-top">
+                    <td className="px-4 py-3 align-middle">
                       {renderTimeframeBadge(
                         report.timeframeKey,
                         report.timeframeLabel
                       )}
                     </td>
-                    <td className="px-4 py-4 align-top">
+                    <td className="px-4 py-3 align-middle">
                       <div className="flex items-center justify-center">
                         <Popover
                           open={openReportPopover === report.id}
