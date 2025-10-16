@@ -96,11 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         items: [
           {
             title: "Reports",
-            url: "/reports",
-          },
-          {
-            title: "Analytics",
-            url: "#",
+            url: "/reports/reporting",
           },
         ],
       },
